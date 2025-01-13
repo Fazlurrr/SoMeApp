@@ -20,6 +20,14 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod());
 });
 
+// Add authentication and authorization services
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+// Add controller services
+builder.Services.AddControllers();
+
+// Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -30,7 +38,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SoMeApp API V1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+    });
 }
 else
 {
