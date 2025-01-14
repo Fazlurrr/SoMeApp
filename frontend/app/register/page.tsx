@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Input, Link, Form, Alert } from "@nextui-org/react";
+import { Button, Input, Link, Form, Alert, Divider } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { register } from "../../utils/api";
 import Header from "../components/Header";
@@ -117,10 +117,35 @@ const Register = () => {
               )}
               isInvalid={passwordErrors.length > 0}
             />
-            <Button className="w-full" color="primary" type="submit">
+            <Button className="w-full mt-4" color="primary" type="submit">
               Register
             </Button>
           </Form>
+          <div className="flex items-center gap-4 py-2">
+            <Divider className="flex-1" />
+            <p className="shrink-0 text-tiny text-default-500">OR</p>
+            <Divider className="flex-1" />
+          </div>
+          <div className="flex flex-col gap-4">
+            <Button
+              startContent={<Icon icon="flat-color-icons:google" width={24} />}
+              variant="bordered"
+            >
+              Continue with Google
+            </Button>
+            <Button
+              startContent={
+                <Icon
+                  className="text-default-500"
+                  icon="fe:github"
+                  width={24}
+                />
+              }
+              variant="bordered"
+            >
+              Continue with Github
+            </Button>
+          </div>
 
           <div className="gap-4 py-2 text-center">
             <p className="text-center text-small">

@@ -98,7 +98,7 @@ const Login = () => {
             <p className="shrink-0 text-tiny text-default-500">OR</p>
             <Divider className="flex-1" />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <Button
               startContent={<Icon icon="flat-color-icons:google" width={24} />}
               variant="bordered"
