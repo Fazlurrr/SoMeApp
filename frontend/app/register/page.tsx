@@ -1,48 +1,147 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { Button, Input, Link, Form, Alert } from "@nextui-org/react";
+import { Icon } from "@iconify/react";
 import { register } from "../../utils/api";
+import Header from "../components/Header";
 
 const Register = () => {
+  const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    try {
-      await register(email, password);
-      alert("Registration successful");
-    } catch (error) {
-      console.error(error);
-      alert("Registration failed");
+  const toggleVisibility = () => setIsVisible(!isVisible);
+
+  const validatePassword = (value: string) => {
+    const errors = [];
+    if (value.length < 8) {
+      errors.push("Password must be 8 characters or more.");
+    }
+    if (!/[A-Z]/.test(value)) {
+      errors.push("Password must include at least 1 upper case letter.");
+    }
+    if (!/[a-z]/.test(value)) {
+      errors.push("Password must include at least 1 lower case letter.");
+    }
+    if (!/[0-9]/.test(value)) {
+      errors.push("Password must include at least 1 number.");
+    }
+    if (!/[^a-zA-Z0-9]/.test(value)) {
+      errors.push("Password must include at least 1 special character.");
+    }
+    setPasswordErrors(errors);
+    setIsPasswordValid(errors.length === 0);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isPasswordValid) {
+      try {
+        await register(email, password);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 4000); // Hide the alert after 3 seconds
+      } catch {
+        alert("Registration failed. Please try again.");
+      }
+    } else {
+      alert("Please fix the password errors before submitting.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded">
-        Register
-      </button>
-    </form>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-grow items-center justify-center">
+        <div className="flex w-full max-w-sm flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-large font-medium">Create your account</h1>
+            <p className="text-small text-default-500">
+              to continue to SoMeApp
+            </p>
+          </div>
+
+          <Form
+            className="flex flex-col gap-3"
+            validationBehavior="native"
+            onSubmit={handleSubmit}
+          >
+            <Input
+              isRequired
+              label="Email Address"
+              name="email"
+              placeholder="Enter your email"
+              type="email"
+              variant="bordered"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              isRequired
+              endContent={
+                <button type="button" onClick={toggleVisibility}>
+                  {isVisible ? (
+                    <Icon
+                      className="pointer-events-none text-2xl text-default-400"
+                      icon="solar:eye-closed-linear"
+                    />
+                  ) : (
+                    <Icon
+                      className="pointer-events-none text-2xl text-default-400"
+                      icon="solar:eye-bold"
+                    />
+                  )}
+                </button>
+              }
+              label="Password"
+              name="password"
+              placeholder="Enter your password"
+              type={isVisible ? "text" : "password"}
+              variant="bordered"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                validatePassword(e.target.value);
+              }}
+              errorMessage={() => (
+                <ul>
+                  {passwordErrors.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              )}
+              isInvalid={passwordErrors.length > 0}
+            />
+            <Button className="w-full" color="primary" type="submit">
+              Register
+            </Button>
+          </Form>
+
+          <div className="gap-4 py-2 text-center">
+            <p className="text-center text-small">
+              Already have an account?&nbsp;
+              <Link href="/login" size="sm">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="fixed bottom-0 left-0 p-4">
+        {showAlert && (
+          <Alert
+            color="success"
+            title="Account created successfully! You can now sign in."
+            className="font-bold"
+          ></Alert>
+        )}
+      </div>
+    </div>
   );
 };
 

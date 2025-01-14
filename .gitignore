@@ -2,3 +2,5 @@
 .DS_Store
 .vscode/
 *.log
+# Ignore Visual Studio solution file
+*.sln
